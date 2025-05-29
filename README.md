@@ -118,7 +118,7 @@ This document represents my **personal understanding** of the self-attention and
 
 If there are any mistakes or inaccuracies, your **corrections are highly appreciated**. Thank you!
 
-**中文版本 Chinese Version:**
+# 中文版本 Chinese Version:
 # Transformer 注意力机制个人理解补充
 
 本项目是对Bilibili视频 [BV1xoJwzDESD](https://www.bilibili.com/video/BV1xoJwzDESD/?spm_id_from=333.337.search-card.all.click&vd_source=594f8fd1e28e6148964bda737696c684) 中大约 46:50 处关于自注意力机制解释的个人理解补充。
