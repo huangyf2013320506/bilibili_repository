@@ -83,7 +83,7 @@ Each row corresponds to one decoding step, progressively revealing more context:
 | 2   | love              | `<start>`, I |
 | 3   | easy              | `<start>`, I, love |
 | 4   | courses           | `<start>`, I, love, easy |
-| 5   | <end>             | `<start>`, I, love, easy, courses |
+| 5   | `<end>`           | `<start>`, I, love, easy, courses |
 
 ---
 
