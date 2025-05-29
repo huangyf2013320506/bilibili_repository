@@ -6,7 +6,7 @@ This document provides a supplementary explanation of self-attention, inspired b
 
 ---
 
-## 🧠 Key Differences: Self-Attention vs Traditional Attention
+## 🔍 Key Differences: Self-Attention vs Traditional Attention
 
 - **Traditional Attention** (e.g., in translation tasks):
   - Driven by the **output**, attending to the **input**.
