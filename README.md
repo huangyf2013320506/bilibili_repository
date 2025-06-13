@@ -118,7 +118,7 @@ A common question is: "How does the masked attention matrix in the Decoder, when
 
 The key is that there is **no premature leakage of future information** in this process. **Residual connections** operate on the row vectors of the matrix (which represent each word's embedding) along the feature dimension.
 
-Let's assume the input matrix has dimensions of $[\text{seq\_len}, \text{d\_model}]$, for example, a $[5 \times 512]$ matrix representing five words (let's call them A, B, C, D, E), where each word has a $512$-dimensional embedding.
+Let's assume the input matrix has dimensions of `[seq_len, d_model]`, for example, a $[5 \times 512]$ matrix representing five words (let's call them A, B, C, D, E), where each word has a $512$-dimensional embedding.
 
 1.  **Through Masked Self-Attention**: The input matrix undergoes linear transformations for Q and K, attention scores are computed, a lower triangular mask is applied, and then `softmax` is performed before multiplying by the V matrix. This results in a new output matrix **O**, which also has dimensions of $[5 \times 512]$.
     * Each row in this matrix **O** contains the semantic information of the current word and all preceding words. This is because the attention mechanism only allows the current word to attend to itself and the words before it.
@@ -208,7 +208,7 @@ Decoder中的第二个多头注意力模块不再是Encoder中的自注意力模
 
 其实，在这个过程中**并没有未来信息的提前泄露**。残差连接（Residual Connection）的操作是针对矩阵的行向量（即每个词的嵌入向量）在特征维度上进行的。
 
-我们假设输入矩阵的维度为 $[ \text{seq\_len}, \text{d\_model} ]$，例如一个 $[5 \times 512]$ 的矩阵，代表五个词（假设为 A, B, C, D, E），每个词有 $512$ 维的词嵌入。
+我们假设输入矩阵的维度为 `[seq_len, d_model]`，例如一个 $[5 \times 512]$ 的矩阵，代表五个词（假设为 A, B, C, D, E），每个词有 $512$ 维的词嵌入。
 
 1.  **经过掩码自注意力**：输入矩阵经过 Q、K 线性变换并计算注意力分数，然后应用下三角掩码，再经过 `softmax` 并乘以 V 矩阵，得到一个新的输出矩阵 **O** (同样是 $[5 \times 512]$ 维度)。
     * 这个矩阵 **O** 的每一行都包含了当前词及其之前所有词的语义信息，因为注意力机制只允许当前词关注到自身以及它前面的词。
