@@ -112,6 +112,25 @@ The result is a `[5 × 512]` matrix that is then passed into the next feed-forwa
 
 ---
 
+## Masked Self-Attention and Residual Connections: Preventing Future Information Leakage
+
+A common question is: "How does the masked attention matrix in the Decoder, when combined with residual connections, manage to block information about words not yet predicted?"
+
+The key is that there is **no premature leakage of future information** in this process. **Residual connections** operate on the row vectors of the matrix (which represent each word's embedding) along the feature dimension.
+
+Let's assume the input matrix has dimensions of $[\text{seq\_len}, \text{d\_model}]$, for example, a $[5 \times 512]$ matrix representing five words (let's call them A, B, C, D, E), where each word has a $512$-dimensional embedding.
+
+1.  **Through Masked Self-Attention**: The input matrix undergoes linear transformations for Q and K, attention scores are computed, a lower triangular mask is applied, and then `softmax` is performed before multiplying by the V matrix. This results in a new output matrix **O**, which also has dimensions of $[5 \times 512]$.
+    * Each row in this matrix **O** contains the semantic information of the current word and all preceding words. This is because the attention mechanism only allows the current word to attend to itself and the words before it.
+    * For instance, the first row of **O** only contains the semantics of word A; the second row includes the semantics of words A and B (since B can attend to A); the third row encompasses the semantics of A, B, and C, and so on.
+
+2.  **Residual Connection**: A residual connection involves element-wise addition between the output **O** from the masked self-attention layer and the **original input** to that layer. This means:
+    * The $512$-dimensional vector corresponding to word A in the original input matrix is added to the row vector corresponding to word A in **O** (which is the first row, containing only A's semantics).
+    * Similarly, the $512$-dimensional vector for word B in the original input matrix is added to the row vector corresponding to word B in **O** (the second row, containing A and B's semantics).
+    * This pattern continues, where the $512$-dimensional vector for word C in the original input matrix is added to the third row of **O** (containing A, B, and C's semantics).
+
+Therefore, even after the residual connection, **each word embedding row only contains semantic information from the current word and previous words, never from subsequent words**. The masking operation guarantees that the attention weights are computed using only historical information, and the residual connection simply "adds" this processed historical information back to the original word embedding without introducing any future context.
+
 ## 🙏 Final Notes
 
 This document represents my **personal understanding** of the self-attention and decoder attention mechanisms in Transformers.
@@ -180,6 +199,27 @@ Decoder中的第二个多头注意力模块不再是Encoder中的自注意力模
 
 * **Encoder**：它并行处理整个输入序列，天然地知道序列的边界。
 * **Decoder**：它面向输出逐步生成，因此需要一个明确的停止信号 (`<end>`) 来指示何时停止生成。
+
+---
+
+## 掩码自注意力与残差连接：未来信息屏蔽
+
+有疑问提到：“Decoder一侧带掩码的注意力矩阵在添加残差的情况下，是如何做到屏蔽还未预测的词？”
+
+其实，在这个过程中**并没有未来信息的提前泄露**。残差连接（Residual Connection）的操作是针对矩阵的行向量（即每个词的嵌入向量）在特征维度上进行的。
+
+我们假设输入矩阵的维度为 $[ \text{seq\_len}, \text{d\_model} ]$，例如一个 $[5 \times 512]$ 的矩阵，代表五个词（假设为 A, B, C, D, E），每个词有 $512$ 维的词嵌入。
+
+1.  **经过掩码自注意力**：输入矩阵经过 Q、K 线性变换并计算注意力分数，然后应用下三角掩码，再经过 `softmax` 并乘以 V 矩阵，得到一个新的输出矩阵 **O** (同样是 $[5 \times 512]$ 维度)。
+    * 这个矩阵 **O** 的每一行都包含了当前词及其之前所有词的语义信息，因为注意力机制只允许当前词关注到自身以及它前面的词。
+    * 例如，**O** 的第一行只包含词 A 自身的语义；第二行包含了词 A 和词 B 的语义（因为 B 可以关注 A）；第三行包含了 A、B、C 的语义，以此类推。
+
+2.  **残差连接**：残差连接是在掩码自注意力层的输出 **O** 和该层的**原始输入**之间进行的元素级相加。这意味着：
+    * 原始输入矩阵中的词 A 对应的 $512$ 维向量，会与 **O** 中词 A 对应的行向量（即第一行，只包含 A 的语义）相加。
+    * 原始输入矩阵中的词 B 对应的 $512$ 维向量，会与 **O** 中词 B 对应的行向量（即第二行，包含 A 和 B 的语义）相加。
+    * 以此类推，原始输入矩阵中的词 C 对应的 $512$ 维向量，会与 **O** 中词 C 对应的行向量（即第三行，包含 A、B、C 的语义）相加。
+
+因此，**每一行的词嵌入在残差连接后，也只包含了当前词及其之前词的语义信息，并不包含后续词的语义**。掩码操作确保了注意力权重的计算只考虑了历史信息，而残差连接只是将这份经过处理的历史信息“叠加”回原始的词嵌入，并没有引入任何未来的信息。
 
 ---
 
